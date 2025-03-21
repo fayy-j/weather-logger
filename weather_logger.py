@@ -2,20 +2,21 @@ import pymysql
 import requests
 from datetime import datetime
 import pytz
+import os
 
 # Set Malaysia Timezone
 malaysia_tz = pytz.timezone("Asia/Kuala_Lumpur")
 
 # OpenWeather API
 CITY = "Kudat"
-API_KEY = "your_api_key"
+API_KEY = os.getenv('API_KEY')
 URL = f"http://api.openweathermap.org/data/2.5/weather?q={CITY}&appid={API_KEY}&units=metric"
 
 # MySQL Database
-DB_HOST = "your_db_host"
-DB_USER = "your_db_user"
-DB_PASSWORD = "your_db_password"
-DB_NAME = "your_db_name"
+DB_HOST = os.getenv('DB_HOST')
+DB_USER = os.getenv('DB_USER')
+DB_PASSWORD = os.getenv('DB_PASSWORD')
+DB_NAME = os.getenv('DB_NAME')
 
 def fetch_and_store_weather():
     try:
