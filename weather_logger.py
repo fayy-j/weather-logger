@@ -12,7 +12,7 @@ app = Flask(__name__)
 malaysia_tz = pytz.timezone("Asia/Kuala_Lumpur")
 
 # OpenWeather API
-CITY = "Kudat"
+CITY = "Kota Belud"
 API_KEY = os.environ.get('API_KEY')
 URL = f"http://api.openweathermap.org/data/2.5/weather?q={CITY}&appid={API_KEY}&units=metric"
 
