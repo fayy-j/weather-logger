@@ -13,14 +13,14 @@ malaysia_tz = pytz.timezone("Asia/Kuala_Lumpur")
 
 # OpenWeather API
 CITY = "Kudat"
-API_KEY = os.environ('API_KEY')
+API_KEY = os.environ.get('API_KEY')
 URL = f"http://api.openweathermap.org/data/2.5/weather?q={CITY}&appid={API_KEY}&units=metric"
 
 # MySQL Database
-DB_HOST = os.environ('DB_HOST')
-DB_USER = os.environ('DB_USER')
-DB_PASSWORD = os.environ('DB_PASSWORD')
-DB_NAME = os.environ('DB_NAME')
+DB_HOST = os.environ.get('DB_HOST')
+DB_USER = os.environ.get('DB_USER')
+DB_PASSWORD = os.environ.get('DB_PASSWORD')
+DB_NAME = os.environ.get('DB_NAME')
 
 def fetch_and_store_weather():
     try:
