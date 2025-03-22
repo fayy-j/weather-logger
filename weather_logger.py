@@ -13,19 +13,24 @@ malaysia_tz = pytz.timezone("Asia/Kuala_Lumpur")
 
 # OpenWeather API
 CITY = "Kudat"
-API_KEY = os.getenv('API_KEY')
+API_KEY = os.environ('API_KEY')
 URL = f"http://api.openweathermap.org/data/2.5/weather?q={CITY}&appid={API_KEY}&units=metric"
 
 # MySQL Database
-DB_HOST = os.getenv('DB_HOST')
-DB_USER = os.getenv('DB_USER')
-DB_PASSWORD = os.getenv('DB_PASSWORD')
-DB_NAME = os.getenv('DB_NAME')
+DB_HOST = os.environ('DB_HOST')
+DB_USER = os.environ('DB_USER')
+DB_PASSWORD = os.environ('DB_PASSWORD')
+DB_NAME = os.environ('DB_NAME')
 
 def fetch_and_store_weather():
     try:
         response = requests.get(URL)
+        response.raise_for_status()
+        
         data = response.json()
+
+        if "main" not in data or "wind" not in data:
+            return "Error: Invalid API response format"
 
         temp = data["main"]["temp"]
         humidity = data["main"]["humidity"]
