@@ -52,7 +52,7 @@ def fetch_and_store_weather():
 def run_scheduler():
     while True:
         fetch_and_store_weather()
-        time.sleep(10)  # Sleep for 10 minutes
+        time.sleep(300)  # Sleep for 10 minutes
 
 @app.route("/")
 def home():
