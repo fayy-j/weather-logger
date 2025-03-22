@@ -3,6 +3,10 @@ import requests
 from datetime import datetime
 import pytz
 import os
+import time
+from flask import Flask
+
+app = Flask(__name__)
 
 # Set Malaysia Timezone
 malaysia_tz = pytz.timezone("Asia/Kuala_Lumpur")
@@ -44,5 +48,17 @@ def fetch_and_store_weather():
     except Exception as e:
         print("❌ Error:", e)
 
-# Run the function once
-fetch_and_store_weather()
+# Schedule the function to run every 10 minutes
+def run_scheduler():
+    while True:
+        fetch_and_store_weather()
+        time.sleep(10)  # Sleep for 10 minutes
+
+@app.route("/")
+def home():
+    return "Weather data updating service is running!"
+
+if __name__ == "__main__":
+    from threading import Thread
+    Thread(target=run_scheduler).start()
+    app.run(host="0.0.0.0", port=10000)
