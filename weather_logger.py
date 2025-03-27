@@ -41,7 +41,7 @@ def fetch_and_store_weather():
             "wind_speed": wind_speed
         }
 
-        php_response = requests.post(PHP_URL, data=payload)
+        php_response = requests.post(PHP_URL, json=payload)  # Use 'json' instead of 'data'
         print(f"✅ {timestamp} - Temp: {temp}°C, Humidity: {humidity}%, Wind Speed: {wind_speed} m/s")
         print("Server response:", php_response.text)
 
