@@ -1,4 +1,3 @@
-import pymysql
 import requests
 from datetime import datetime
 import pytz
@@ -16,11 +15,8 @@ CITY = "Kota Belud"
 API_KEY = os.environ.get('API_KEY')
 URL = f"http://api.openweathermap.org/data/2.5/weather?q={CITY}&appid={API_KEY}&units=metric"
 
-# MySQL Database
-DB_HOST = os.environ.get('DB_HOST')
-DB_USER = os.environ.get('DB_USER')
-DB_PASSWORD = os.environ.get('DB_PASSWORD')
-DB_NAME = os.environ.get('DB_NAME')
+# PHP API URL (Replace with your InfinityFree URL)
+PHP_URL = "http://kb-weather.kesug.com/insert.php"  # Change to your actual URL
 
 def fetch_and_store_weather():
     try:
@@ -37,18 +33,17 @@ def fetch_and_store_weather():
         wind_speed = data["wind"]["speed"]
         timestamp = datetime.now(malaysia_tz).strftime('%Y-%m-%d %H:%M:%S')
 
-        # Connect to MySQL
-        connection = pymysql.connect(host=DB_HOST, user=DB_USER, password=DB_PASSWORD, database=DB_NAME)
-        cursor = connection.cursor()
+        # Send data to PHP script
+        payload = {
+            "timestamp": timestamp,
+            "temperature": temp,
+            "humidity": humidity,
+            "wind_speed": wind_speed
+        }
 
-        insert_query = "INSERT INTO weather_data (timestamp, temperature, humidity, wind_speed) VALUES (%s, %s, %s, %s)"
-        cursor.execute(insert_query, (timestamp, temp, humidity, wind_speed))
-
-        connection.commit()
-        cursor.close()
-        connection.close()
-
+        php_response = requests.post(PHP_URL, data=payload)
         print(f"✅ {timestamp} - Temp: {temp}°C, Humidity: {humidity}%, Wind Speed: {wind_speed} m/s")
+        print("Server response:", php_response.text)
 
     except Exception as e:
         print("❌ Error:", e)
@@ -57,7 +52,7 @@ def fetch_and_store_weather():
 def run_scheduler():
     while True:
         fetch_and_store_weather()
-        time.sleep(300)  # Sleep for 10 minutes
+        time.sleep(600)  # Sleep for 10 minutes
 
 @app.route("/")
 def home():
