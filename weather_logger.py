@@ -1,4 +1,4 @@
-import pymysql
+import psycopg2
 import requests
 from datetime import datetime
 import pytz
@@ -16,11 +16,12 @@ CITY = "Kota Belud"
 API_KEY = os.environ.get('API_KEY')
 URL = f"http://api.openweathermap.org/data/2.5/weather?q={CITY}&appid={API_KEY}&units=metric"
 
-# MySQL Database
+# PostgreSQL Database Credentials
 DB_HOST = os.environ.get('DB_HOST')
 DB_USER = os.environ.get('DB_USER')
 DB_PASSWORD = os.environ.get('DB_PASSWORD')
 DB_NAME = os.environ.get('DB_NAME')
+DB_PORT = os.environ.get('DB_PORT', 5432)  # Default PostgreSQL Port
 
 def fetch_and_store_weather():
     try:
@@ -37,11 +38,22 @@ def fetch_and_store_weather():
         wind_speed = data["wind"]["speed"]
         timestamp = datetime.now(malaysia_tz).strftime('%Y-%m-%d %H:%M:%S')
 
-        # Connect to MySQL
-        connection = pymysql.connect(host=DB_HOST, user=DB_USER, password=DB_PASSWORD, database=DB_NAME)
+        # Connect to PostgreSQL
+        connection = psycopg2.connect(
+            host=DB_HOST,
+            database=DB_NAME,
+            user=DB_USER,
+            password=DB_PASSWORD,
+            port=DB_PORT,
+            sslmode="require"  # Required for Render
+        )
         cursor = connection.cursor()
 
-        insert_query = "INSERT INTO weather_data (timestamp, temperature, humidity, wind_speed) VALUES (%s, %s, %s, %s)"
+        # Insert Data
+        insert_query = """
+        INSERT INTO weather_data (timestamp, temperature, humidity, wind_speed) 
+        VALUES (%s, %s, %s, %s)
+        """
         cursor.execute(insert_query, (timestamp, temp, humidity, wind_speed))
 
         connection.commit()
@@ -57,7 +69,7 @@ def fetch_and_store_weather():
 def run_scheduler():
     while True:
         fetch_and_store_weather()
-        time.sleep(300)  # Sleep for 10 minutes
+        time.sleep(600)  # Sleep for 10 minutes
 
 @app.route("/")
 def home():
